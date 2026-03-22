@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pankaj | Full Stack Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0f172a',
+                        accent: '#3b82f6',
+                        secondary: '#64748b',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-card {
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .timeline-line {
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6, #ec4899);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .soft-skill-card {
+            transition: all 0.3s ease;
+        }
+
+        .soft-skill-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        /* CV Modal Styles */
+        .cv-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cv-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .cv-container {
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .cv-modal.active .cv-container {
+            transform: scale(1);
+        }
+
+        .cv-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        @media (max-width: 768px) {
+            .cv-iframe {
+                height: 70vh;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-white overflow-x-hidden font-sans selection:bg-blue-500 selection:text-white">
+
+    <!-- CV View Modal -->
+    <div id="cvModal" class="cv-modal items-center justify-center p-4 md:p-8">
+        <div
+            class="cv-container w-full max-w-5xl h-full max-h-[90vh] bg-slate-900 rounded-2xl overflow-hidden border border-white/20 shadow-2xl flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-4 border-b border-white/10 bg-slate-800/50">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="file-text" class="w-6 h-6 text-blue-400"></i>
+                    <h3 class="text-lg font-bold">Pankaj - Curriculum Vitae</h3>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="CV.pdf" download="Pankaj_CV.pdf"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        Download
+                    </a>
+                    <button onclick="closeCV()" class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- PDF Viewer -->
+            <div class="flex-1 overflow-hidden bg-slate-800 relative">
+                <iframe id="cvIframe" class="cv-iframe" src="CV.pdf" type="application/pdf"></iframe>
+                <!-- Fallback for browsers that don't support PDF iframe -->
+                <div id="cvFallback"
+                    class="hidden absolute inset-0 flex flex-col items-center justify-center bg-slate-800 text-center p-8">
+                    <i data-lucide="file-x" class="w-16 h-16 text-gray-500 mb-4"></i>
+                    <p class="text-gray-400 mb-4">Unable to display PDF directly in browser.</p>
+                    <a href="CV.pdf" download="Pankaj_CV.pdf"
+                        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-colors flex items-center gap-2">
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                        Download CV Instead
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+        <div class="glass mx-4 mt-4 rounded-2xl px-6 py-4 max-w-7xl mx-auto">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-display font-bold gradient-text">Pankaj Bishnoi</a>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="hover:text-blue-400 transition-colors">About</a>
+                    <a href="#skills" class="hover:text-blue-400 transition-colors">Skills</a>
+                    <a href="#soft-skills" class="hover:text-blue-400 transition-colors">Soft Skills</a>
+                    <a href="#experience" class="hover:text-blue-400 transition-colors">Experience</a>
+                    <a href="#projects" class="hover:text-blue-400 transition-colors">Projects</a>
+                    <a href="#cv" onclick="openCV()"
+                        class="hover:text-blue-400 transition-colors flex items-center gap-1">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> CV
+                    </a>
+                    <a href="#contact"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-all hover:scale-105">Contact</a>
+                </div>
+                <button class="md:hidden" onclick="toggleMenu()">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden glass mx-4 mt-2 rounded-2xl p-6">
+            <div class="flex flex-col space-y-4">
+                <a href="#about" class="hover:text-blue-400 transition-colors" onclick="toggleMenu()">About</a>
+                <a href="#skills" class="hover:text-blue-400 transition-colors" onclick="toggleMenu()">Skills</a>
+                <a href="#soft-skills" class="hover:text-blue-400 transition-colors" onclick="toggleMenu()">Soft
+                    Skills</a>
+                <a href="#experience" class="hover:text-blue-400 transition-colors"
+                    onclick="toggleMenu()">Experience</a>
+                <a href="#projects" class="hover:text-blue-400 transition-colors" onclick="toggleMenu()">Projects</a>
+                <a href="#cv" onclick="toggleMenu(); openCV()"
+                    class="hover:text-blue-400 transition-colors flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> View CV
+                </a>
+                <a href="#contact" class="text-blue-400" onclick="toggleMenu()">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <!-- Animated Background Blobs -->
+        <div class="blob bg-blue-600 w-96 h-96 rounded-full top-20 -left-20"></div>
+        <div class="blob bg-purple-600 w-80 h-80 rounded-full bottom-20 -right-20 animation-delay-2000"></div>
+        <div
+            class="blob bg-pink-600 w-64 h-64 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animation-delay-4000">
+        </div>
+
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+
+            <!-- 🔥 PROFILE IMAGE -->
+            <div class="flex justify-center mb-8">
+                <div class="relative group">
+                    <!-- Glow -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition">
+                    </div>
+
+                    <!-- Image -->
+                    <img src="pk.jpeg" alt="Pankaj"
+                        class="relative w-44 h-44 rounded-full object-cover border-4 border-slate-900 shadow-2xl transform group-hover:scale-105 transition duration-300">
+                </div>
+            </div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                <span class="text-sm text-gray-300">Available for opportunities</span>
+            </div>
+
+            <h1 class="text-6xl md:text-8xl font-display font-bold mb-6 leading-tight">
+                Hi, I'm <span class="gradient-text typing-cursor" id="nameText">Pankaj</span>
+            </h1>
+
+            <p class="text-xl md:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Full Stack Developer crafting robust backend systems with <span class="text-blue-400 font-semibold">.NET
+                    Core</span> &
+                <span class="text-purple-400 font-semibold">React</span>. Building scalable solutions that matter.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                <a href="#projects"
+                    class="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-full font-semibold transition-all hover:scale-105 flex items-center gap-2">
+                    View Projects <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
+                <a href="https://github.com/Pankajbishnoi2" target="_blank"
+                    class="px-8 py-4 glass hover:bg-white/10 rounded-full font-semibold transition-all flex items-center gap-2">
+                    <i data-lucide="github" class="w-5 h-5"></i> GitHub
+                </a>
+                <!-- View CV Button -->
+                <button onclick="openCV()"
+                    class="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-full font-semibold transition-all hover:scale-105 flex items-center gap-2 shadow-lg shadow-green-500/25">
+                    <i data-lucide="eye" class="w-5 h-5"></i> View CV
+                </button>
+            </div>
+
+            <div class="flex justify-center gap-6 text-gray-400">
+                <a href="https://linkedin.com/in/pankajbishnoi29/" target="_blank"
+                    class="hover:text-blue-400 transition-colors transform hover:scale-110">
+                    <i data-lucide="linkedin" class="w-6 h-6"></i>
+                </a>
+                <a href="mailto:monubishnoi468@gmail.com"
+                    class="hover:text-red-400 transition-colors transform hover:scale-110">
+                    <i data-lucide="mail" class="w-6 h-6"></i>
+                </a>
+                <a href="tel:+919812993229" class="hover:text-green-400 transition-colors transform hover:scale-110">
+                    <i data-lucide="phone" class="w-6 h-6"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <i data-lucide="chevron-down" class="w-6 h-6 text-gray-400"></i>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="glass rounded-2xl p-6 text-center reveal">
+                <div class="text-4xl font-bold gradient-text mb-2">7+</div>
+                <div class="text-gray-400 text-sm">Technologies</div>
+            </div>
+            <div class="glass rounded-2xl p-6 text-center reveal">
+                <div class="text-4xl font-bold gradient-text mb-2">3+</div>
+                <div class="text-gray-400 text-sm">Projects</div>
+            </div>
+            <div class="glass rounded-2xl p-6 text-center reveal">
+                <div class="text-4xl font-bold gradient-text mb-2">1+</div>
+                <div class="text-gray-400 text-sm">Years Exp</div>
+            </div>
+            <div class="glass rounded-2xl p-6 text-center reveal">
+                <div class="text-4xl font-bold gradient-text mb-2">100%</div>
+                <div class="text-gray-400 text-sm">Matric Score</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-4 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="reveal">
+                    <h2 class="text-4xl md:text-5xl font-display font-bold mb-6">About Me</h2>
+                    <div class="space-y-4 text-gray-300 leading-relaxed">
+                        <p>
+                            I'm a <span class="text-white font-semibold">Computer Science Engineering</span> student at
+                            Lovely Professional University with a passion for building scalable web applications.
+                        </p>
+                        <p>
+                            My journey started with foundational web technologies and evolved into full-stack
+                            development, specializing in <span class="text-blue-400">.NET Core Web API</span> and modern
+                            frontend frameworks like <span class="text-purple-400">React</span> with TypeScript.
+                        </p>
+                        <p>
+                            I love solving complex problems, optimizing application performance, and creating seamless
+                            user experiences. Currently seeking opportunities to contribute to impactful projects.
+                        </p>
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-blue-500"></i>
+                            Phagwara, Punjab
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-gray-400">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 text-purple-500"></i>
+                            B.Tech CSE (CGPA: 7.29)
+                        </div>
+                    </div>
+
+                    <!-- CV Actions in About Section -->
+                    <div class="mt-8 flex flex-wrap gap-3">
+                        <button onclick="openCV()"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-xl transition-all hover:scale-105">
+                            <i data-lucide="eye" class="w-5 h-5"></i>
+                            <span class="font-semibold">View CV</span>
+                        </button>
+                        <a href="CV.pdf" download="Pankaj_CV.pdf"
+                            class="inline-flex items-center gap-2 px-6 py-3 glass border border-white/20 hover:border-green-500/50 rounded-xl transition-all hover:bg-white/5">
+                            <i data-lucide="download" class="w-5 h-5 text-green-400"></i>
+                            <span class="font-semibold">Download</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-2xl opacity-30">
+                    </div>
+                    <div class="relative glass rounded-3xl p-8 border border-white/10">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-4">
+                                <div class="bg-slate-800/50 rounded-2xl p-4 border border-white/5">
+                                    <i data-lucide="code-2" class="w-8 h-8 text-blue-400 mb-2"></i>
+                                    <div class="font-semibold">Clean Code</div>
+                                    <div class="text-xs text-gray-400">Best practices</div>
+                                </div>
+                                <div class="bg-slate-800/50 rounded-2xl p-4 border border-white/5">
+                                    <i data-lucide="zap" class="w-8 h-8 text-yellow-400 mb-2"></i>
+                                    <div class="font-semibold">Performance</div>
+                                    <div class="text-xs text-gray-400">Optimized solutions</div>
+                                </div>
+                            </div>
+                            <div class="space-y-4 mt-8">
+                                <div class="bg-slate-800/50 rounded-2xl p-4 border border-white/5">
+                                    <i data-lucide="shield" class="w-8 h-8 text-green-400 mb-2"></i>
+                                    <div class="font-semibold">Security</div>
+                                    <div class="text-xs text-gray-400">JWT & Auth</div>
+                                </div>
+                                <div class="bg-slate-800/50 rounded-2xl p-4 border border-white/5">
+                                    <i data-lucide="users" class="w-8 h-8 text-pink-400 mb-2"></i>
+                                    <div class="font-semibold">Collaboration</div>
+                                    <div class="text-xs text-gray-400">Team player</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Skills Section -->
+    <section id="skills" class="py-20 px-4 bg-slate-900/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Technical Arsenal</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Technologies I work with to bring ideas to life</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Languages -->
+                <div class="skill-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-blue-500/20 rounded-xl">
+                            <i data-lucide="code" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Languages</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">C#</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">C++</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Python</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Java</span>
+                        <span
+                            class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">JavaScript</span>
+                        <span
+                            class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">TypeScript</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">PHP</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">C</span>
+                    </div>
+                </div>
+
+                <!-- Frontend -->
+                <div class="skill-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-purple-500/20 rounded-xl">
+                            <i data-lucide="layout" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Frontend</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">React.js</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">HTML5</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">CSS3</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Tailwind
+                            CSS</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Redux
+                            Toolkit</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Axios</span>
+                    </div>
+                </div>
+
+                <!-- Backend -->
+                <div class="skill-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-green-500/20 rounded-xl">
+                            <i data-lucide="server" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Backend</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">.NET Core</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Node.js</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Web API</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">JWT Auth</span>
+                    </div>
+                </div>
+
+                <!-- Database -->
+                <div class="skill-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-yellow-500/20 rounded-xl">
+                            <i data-lucide="database" class="w-6 h-6 text-yellow-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Database</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">PostgreSQL</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">MySQL</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">MS SQL</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">MongoDB</span>
+                    </div>
+                </div>
+
+                <!-- Tools -->
+                <div class="skill-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-pink-500/20 rounded-xl">
+                            <i data-lucide="wrench" class="w-6 h-6 text-pink-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Tools</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">GitHub</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Postman</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">VS Code</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Visual
+                            Studio</span>
+                    </div>
+                </div>
+
+                <!-- OS -->
+                <div class="skill-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-orange-500/20 rounded-xl">
+                            <i data-lucide="monitor" class="w-6 h-6 text-orange-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Platforms</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Windows</span>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-sm border border-white/5">Ubuntu</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Soft Skills Section -->
+    <section id="soft-skills" class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Soft Skills</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Professional competencies that drive success</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Problem Solving -->
+                <div class="soft-skill-card glass rounded-2xl p-6 border border-white/10 reveal">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i data-lucide="puzzle" class="w-7 h-7 text-blue-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Problem-Solving</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Analytical approach to breaking down complex challenges into manageable solutions with creative
+                        thinking.
+                    </p>
+                    <div class="mt-4 flex items-center gap-1">
+                        <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 w-[95%] rounded-full"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">95%</span>
+                    </div>
+                </div>
+
+                <!-- Project Management -->
+                <div class="soft-skill-card glass rounded-2xl p-6 border border-white/10 reveal">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i data-lucide="target" class="w-7 h-7 text-purple-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Project Management</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Efficient planning, organization, and execution of tasks to deliver high-quality results within
+                        deadlines.
+                    </p>
+                    <div class="mt-4 flex items-center gap-1">
+                        <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-purple-500 w-[90%] rounded-full"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">90%</span>
+                    </div>
+                </div>
+
+                <!-- Team Player -->
+                <div class="soft-skill-card glass rounded-2xl p-6 border border-white/10 reveal">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i data-lucide="users-round" class="w-7 h-7 text-green-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Team Player</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Collaborative mindset with strong communication skills, fostering positive relationships and
+                        shared success.
+                    </p>
+                    <div class="mt-4 flex items-center gap-1">
+                        <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-green-500 w-[92%] rounded-full"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">92%</span>
+                    </div>
+                </div>
+
+                <!-- Adaptability -->
+                <div class="soft-skill-card glass rounded-2xl p-6 border border-white/10 reveal">
+                    <div
+                        class="w-14 h-14 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-2xl flex items-center justify-center mb-4">
+                        <i data-lucide="refresh-cw" class="w-7 h-7 text-orange-400"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Adaptability</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Quick learner who embraces new technologies and thrives in dynamic, fast-paced environments.
+                    </p>
+                    <div class="mt-4 flex items-center gap-1">
+                        <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-orange-500 w-[88%] rounded-full"></div>
+                        </div>
+                        <span class="text-xs text-gray-500">88%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Soft Skills Tags -->
+            <div class="mt-12 flex flex-wrap justify-center gap-3 reveal">
+                <span class="px-4 py-2 glass rounded-full text-sm text-gray-300 flex items-center gap-2">
+                    <i data-lucide="message-circle" class="w-4 h-4 text-blue-400"></i>
+                    Communication
+                </span>
+                <span class="px-4 py-2 glass rounded-full text-sm text-gray-300 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-purple-400"></i>
+                    Time Management
+                </span>
+                <span class="px-4 py-2 glass rounded-full text-sm text-gray-300 flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-yellow-400"></i>
+                    Creativity
+                </span>
+                <span class="px-4 py-2 glass rounded-full text-sm text-gray-300 flex items-center gap-2">
+                    <i data-lucide="git-pull-request" class="w-4 h-4 text-green-400"></i>
+                    Collaboration
+                </span>
+                <span class="px-4 py-2 glass rounded-full text-sm text-gray-300 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="w-4 h-4 text-pink-400"></i>
+                    Continuous Learning
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CV Preview Section - NEW -->
+    <section id="cv" class="py-20 px-4 bg-slate-900/50 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Curriculum Vitae</h2>
+                <p class="text-gray-400">View or download my detailed resume</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <!-- CV Preview Card -->
+                <div class="reveal">
+                    <div class="glass rounded-3xl p-8 border border-white/10 relative overflow-hidden group cursor-pointer"
+                        onclick="openCV()">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity">
+                        </div>
+
+                        <!-- Preview Mockup -->
+                        <div
+                            class="relative bg-white rounded-xl overflow-hidden shadow-2xl aspect-[3/4] max-w-sm mx-auto transform group-hover:scale-[1.02] transition-transform">
+                            <div class="bg-slate-900 text-white p-6 h-full">
+                                <div class="border-b border-white/20 pb-4 mb-4">
+                                    <div class="h-8 w-32 bg-white/20 rounded mb-2"></div>
+                                    <div class="h-4 w-48 bg-white/10 rounded"></div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="h-3 w-full bg-white/10 rounded"></div>
+                                    <div class="h-3 w-5/6 bg-white/10 rounded"></div>
+                                    <div class="h-3 w-4/6 bg-white/10 rounded"></div>
+                                    <div class="mt-6 h-20 bg-white/5 rounded"></div>
+                                    <div class="mt-4 space-y-2">
+                                        <div class="h-2 w-full bg-white/10 rounded"></div>
+                                        <div class="h-2 w-full bg-white/10 rounded"></div>
+                                        <div class="h-2 w-3/4 bg-white/10 rounded"></div>
+                                    </div>
+                                </div>
+                                <!-- View Overlay -->
+                                <div
+                                    class="absolute inset-0 bg-slate-900/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="text-center">
+                                        <i data-lucide="eye" class="w-12 h-12 text-blue-400 mx-auto mb-2"></i>
+                                        <span class="text-white font-semibold">Click to View</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-center">
+                            <h3 class="text-xl font-bold mb-2">Pankaj_CV.pdf</h3>
+                            <p class="text-sm text-gray-400">Last updated: March 2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CV Actions -->
+                <div class="reveal space-y-6">
+                    <h3 class="text-2xl font-bold mb-6">Quick Actions</h3>
+
+                    <button onclick="openCV()"
+                        class="w-full p-6 glass rounded-2xl border border-white/10 hover:border-blue-500/50 transition-all group text-left flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="eye" class="w-7 h-7 text-blue-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg">View Online</h4>
+                            <p class="text-sm text-gray-400">Preview CV in browser viewer</p>
+                        </div>
+                        <i data-lucide="chevron-right"
+                            class="w-6 h-6 text-gray-600 group-hover:text-blue-400 transition-colors"></i>
+                    </button>
+
+                    <a href="CV.pdf" download="Pankaj_CV.pdf"
+                        class="block w-full p-6 glass rounded-2xl border border-white/10 hover:border-green-500/50 transition-all group text-left flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 bg-green-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="download" class="w-7 h-7 text-green-400"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg">Download PDF</h4>
+                            <p class="text-sm text-gray-400">Save to your device</p>
+                        </div>
+                        <i data-lucide="chevron-right"
+                            class="w-6 h-6 text-gray-600 group-hover:text-green-400 transition-colors"></i>
+                    </a>
+
+                    <div class="p-6 glass rounded-2xl border border-white/10">
+                        <h4 class="font-bold mb-3 flex items-center gap-2">
+                            <i data-lucide="info" class="w-5 h-5 text-yellow-400"></i>
+                            CV Highlights
+                        </h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                                B.Tech in Computer Science (CGPA: 7.29)
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                                Full Stack Development Experience
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                                Microsoft & Infosys Certified
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                                100% Matriculation Score
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="py-20 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Experience & Training</h2>
+                <p class="text-gray-400">My professional journey</p>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-8 top-0 bottom-0 w-0.5 timeline-line hidden md:block"></div>
+
+                <!-- Internship -->
+                <div class="relative mb-12 reveal">
+                    <div
+                        class="hidden md:block absolute left-8 transform -translate-x-1/2 w-4 h-4 bg-blue-500 rounded-full border-4 border-slate-900 z-10">
+                    </div>
+                    <div class="md:ml-20 glass rounded-2xl p-6 border-l-4 border-blue-500">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Web Skill Development Intern</h3>
+                                <p class="text-blue-400 font-semibold">KMA Techno ware</p>
+                            </div>
+                            <span class="text-sm text-gray-400 mt-2 md:mt-0 bg-slate-800 px-3 py-1 rounded-full">Jun
+                                2024 – Aug 2025</span>
+                        </div>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                                <span>Developed and maintained full-stack components with advanced state
+                                    management</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                                <span>Implemented data-fetching strategies using RTK Query and Axios</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                                <span>Tech Stack: React, TypeScript, PostgreSQL, .NET Core Web API</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Training -->
+                <div class="relative mb-12 reveal">
+                    <div
+                        class="hidden md:block absolute left-8 transform -translate-x-1/2 w-4 h-4 bg-purple-500 rounded-full border-4 border-slate-900 z-10">
+                    </div>
+                    <div class="md:ml-20 glass rounded-2xl p-6 border-l-4 border-purple-500">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Backend Development (C#)</h3>
+                                <p class="text-purple-400 font-semibold">KMA Techno ware</p>
+                            </div>
+                            <span class="text-sm text-gray-400 mt-2 md:mt-0 bg-slate-800 px-3 py-1 rounded-full">Dec
+                                2024 – Jan 2025</span>
+                        </div>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                                <span>Developed backend functionalities using C# with asynchronous API calls</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                                <span>Improved application performance and responsiveness</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 shrink-0"></i>
+                                <span>Collaborated in debugging, testing, and optimizing backend modules</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 px-4 bg-slate-900/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Featured Projects</h2>
+                <p class="text-gray-400">Showcasing my best work</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Hospital Management System -->
+                <div class="group relative reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                    </div>
+                    <div
+                        class="relative glass rounded-3xl overflow-hidden border border-white/10 hover:border-white/20 transition-all">
+                        <div
+                            class="h-48 bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center relative overflow-hidden">
+                            <div
+                                class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%239C92AC\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20">
+                            </div>
+                            <i data-lucide="activity" class="w-16 h-16 text-blue-400 relative z-10"></i>
+                        </div>
+                        <div class="p-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-2xl font-bold">Hospital Management System</h3>
+                                <a href="#" class="p-2 hover:bg-white/10 rounded-full transition-colors">
+                                    <i data-lucide="external-link" class="w-5 h-5"></i>
+                                </a>
+                            </div>
+                            <p class="text-gray-400 mb-6 leading-relaxed">
+                                A comprehensive healthcare management solution featuring secure role-based
+                                authentication,
+                                responsive patient portal, and automated IPD modules for admission, bed allocation, and
+                                discharge.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span
+                                    class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs">React.js</span>
+                                <span
+                                    class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">TypeScript</span>
+                                <span class="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-xs">Tailwind
+                                    CSS</span>
+                                <span class="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">.NET
+                                    Core</span>
+                                <span class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-xs">JWT
+                                    Auth</span>
+                            </div>
+                            <div class="flex gap-4 text-sm text-gray-400">
+                                <span class="flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i> June 2025
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <i data-lucide="git-branch" class="w-4 h-4"></i> Full Stack
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Project Card (Template for future) -->
+                <div class="group relative reveal">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                    </div>
+                    <div
+                        class="relative glass rounded-3xl overflow-hidden border border-white/10 hover:border-white/20 transition-all h-full flex flex-col justify-center items-center p-12 text-center">
+                        <div
+                            class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="plus" class="w-10 h-10 text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">More Projects Coming</h3>
+                        <p class="text-gray-400 text-sm">Currently working on exciting new projects</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certificates & Achievements -->
+    <section class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Certificates -->
+                <div class="reveal">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                        <i data-lucide="award" class="w-6 h-6 text-yellow-400"></i>
+                        Certifications
+                    </h3>
+                    <div class="space-y-4">
+                        <div
+                            class="glass rounded-xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors cursor-pointer">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="file-badge" class="w-6 h-6 text-blue-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">Python Programming</div>
+                                <div class="text-sm text-gray-400">Microsoft / Skill India</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                        </div>
+
+                        <div
+                            class="glass rounded-xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors cursor-pointer">
+                            <div
+                                class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="brain" class="w-6 h-6 text-purple-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">Computational Theory</div>
+                                <div class="text-sm text-gray-400">Infosys (Automata Theory)</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                        </div>
+
+                        <div
+                            class="glass rounded-xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors cursor-pointer">
+                            <div
+                                class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="code-2" class="w-6 h-6 text-orange-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">Mastering C++</div>
+                                <div class="text-sm text-gray-400">Lovely Professional University</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                        </div>
+
+                        <div
+                            class="glass rounded-xl p-4 flex items-center gap-4 hover:bg-white/5 transition-colors cursor-pointer">
+                            <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="layout" class="w-6 h-6 text-green-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">Responsive Web Design</div>
+                                <div class="text-sm text-gray-400">FreeCodeCamp</div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="reveal">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                        <i data-lucide="trophy" class="w-6 h-6 text-yellow-400"></i>
+                        Achievements
+                    </h3>
+                    <div class="space-y-6">
+                        <div class="glass rounded-2xl p-6 border-l-4 border-yellow-400">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-yellow-400/20 rounded-xl shrink-0">
+                                    <i data-lucide="star" class="w-6 h-6 text-yellow-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">FreeCodeCamp Certified Developer</h4>
+                                    <p class="text-sm text-gray-400">Completed immersive front-end and JavaScript
+                                        projects</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-2xl p-6 border-l-4 border-orange-400">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-orange-400/20 rounded-xl shrink-0">
+                                    <i data-lucide="medal" class="w-6 h-6 text-orange-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">HackerRank Bronze Badge</h4>
+                                    <p class="text-sm text-gray-400">5-Star Rating in Java with advanced algorithmic
+                                        challenges</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-2xl p-6 border-l-4 border-blue-400">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-blue-400/20 rounded-xl shrink-0">
+                                    <i data-lucide="shield-check" class="w-6 h-6 text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-1">API Integration Expert</h4>
+                                    <p class="text-sm text-gray-400">Successfully integrated real-world APIs with
+                                        authentication</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4 bg-slate-900/50 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div class="blob bg-blue-600 w-96 h-96 rounded-full -bottom-48 -right-48 opacity-20"></div>
+        </div>
+
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="text-center mb-12 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Let's Work Together</h2>
+                <p class="text-gray-400">Open for internships and collaboration opportunities</p>
+            </div>
+
+            <div class="glass rounded-3xl p-8 md:p-12 reveal">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold mb-6">Get in Touch</h3>
+
+                        <a href="mailto:monubishnoi468@gmail.com"
+                            class="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                            <div
+                                class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="mail" class="w-6 h-6 text-red-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Email</div>
+                                <div class="font-semibold">monubishnoi468@gmail.com</div>
+                            </div>
+                        </a>
+
+                        <a href="tel:+919812993229"
+                            class="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                            <div
+                                class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="phone" class="w-6 h-6 text-green-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Phone</div>
+                                <div class="font-semibold">+91 9812993229</div>
+                            </div>
+                        </a>
+
+                        <div class="flex items-center gap-4 p-4 rounded-xl">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                                <i data-lucide="map-pin" class="w-6 h-6 text-blue-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-400">Location</div>
+                                <div class="font-semibold">Phagwara, Punjab, India</div>
+                            </div>
+                        </div>
+
+                        <!-- View CV in Contact Section -->
+                        <button onclick="openCV()"
+                            class="w-full flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 hover:border-blue-500/50 transition-all group">
+                            <div
+                                class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="file-text" class="w-6 h-6 text-blue-400"></i>
+                            </div>
+                            <div class="flex-1 text-left">
+                                <div class="text-sm text-gray-400">Resume</div>
+                                <div class="font-semibold text-blue-400">View or Download CV</div>
+                            </div>
+                            <i data-lucide="external-link" class="w-5 h-5 text-blue-400"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold mb-6">Connect</h3>
+
+                        <a href="https://linkedin.com/in/pankajbishnoi29/" target="_blank"
+                            class="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                            <div
+                                class="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="linkedin" class="w-6 h-6 text-blue-400"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">LinkedIn</div>
+                                <div class="text-sm text-gray-400">linkedin.com/in/pankajbishnoi29/</div>
+                            </div>
+                            <i data-lucide="external-link" class="w-5 h-5 text-gray-600"></i>
+                        </a>
+
+                        <a href="https://github.com/Pankajbishnoi2" target="_blank"
+                            class="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group">
+                            <div
+                                class="w-12 h-12 bg-gray-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="github" class="w-6 h-6 text-gray-300"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">GitHub</div>
+                                <div class="text-sm text-gray-400">github.com/Pankajbishnoi2</div>
+                            </div>
+                            <i data-lucide="external-link" class="w-5 h-5 text-gray-600"></i>
+                        </a>
+
+                        <div class="pt-6">
+                            <a href="mailto:monubishnoi468@gmail.com"
+                                class="block w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-xl font-semibold text-center transition-all hover:scale-[1.02]">
+                                Send Message
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-white/10">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-2xl font-display font-bold gradient-text">Pankaj Bishnoi</div>
+            <div class="text-gray-400 text-sm">
+                © 2025 Pankaj. Crafted with passion.
+            </div>
+            <div class="flex gap-4">
+                <a href="https://github.com/Pankajbishnoi2" target="_blank"
+                    class="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                </a>
+                <a href="https://linkedin.com/in/pankajbishnoi29/" target="_blank"
+                    class="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="linkedin" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // CV Modal Functions
+        function openCV() {
+            const modal = document.getElementById('cvModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Check if PDF loaded successfully after 2 seconds
+            setTimeout(() => {
+                const iframe = document.getElementById('cvIframe');
+                try {
+                    // If we can access the iframe content, it loaded
+                    if (iframe.contentDocument && iframe.contentDocument.body.innerHTML === '') {
+                        showFallback();
+                    }
+                } catch (e) {
+                    // Cross-origin error means it probably loaded (different domain)
+                    // If it's empty, show fallback
+                }
+            }, 2000);
+        }
+
+        function closeCV() {
+            const modal = document.getElementById('cvModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function showFallback() {
+            document.getElementById('cvFallback').classList.remove('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('cvModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeCV();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeCV();
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+        // Navbar scroll effect
+        let lastScroll = 0;
+        const navbar = document.getElementById('navbar');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 100) {
+                navbar.classList.add('glass');
+            } else {
+                navbar.classList.remove('glass');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+        // Typing effect for name
+        const nameText = document.getElementById('nameText');
+        const name = 'Pankaj';
+        let i = 0;
+
+        function typeWriter() {
+            if (i < name.length) {
+                nameText.textContent = name.substring(0, i + 1);
+                i++;
+                setTimeout(typeWriter, 200);
+            }
+        }
+
+        setTimeout(typeWriter, 500);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#cv') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
